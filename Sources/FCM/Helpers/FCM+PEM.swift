@@ -2,14 +2,14 @@ import Foundation
 import Vapor
 
 extension FCM {
-    public convenience init(email: String, projectId: String, pathToKey path: String) {
+    public convenience init(email: String, projectId: String, pathToKey path: String) throws {
         let fm = FileManager.default
         guard let data = fm.contents(atPath: path) else {
-            fatalError("FCM pem file doesn't exists")
+            throw InitializationError.pemNotFound(path: path)
         }
         guard let key = String(data: data, encoding: .utf8) else {
-            fatalError("FCM unable to decode key file content")
+            throw InitializationError.pemBadJSON(path: path)
         }
-        self.init(email: email, projectId: projectId, key: key)
+        try self.init(email: email, projectId: projectId, key: key)
     }
 }

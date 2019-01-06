@@ -31,15 +31,20 @@ public class FCM: FCMProvider {
     // MARK: Initialization
     
     /// Key should be PEM Private key
-    public init(email: String, projectId: String, key: String) {
+    public init(email: String, projectId: String, key: String) throws {
         self.email = email
         self.projectId = projectId
         self.key = key
         gAuthPayload = GAuthPayload(iss: email, sub: email, scope: scope, aud: audience)
-        do {
-            _jwt = try generateJWT()
-        } catch {
-            fatalError("FCM Unable to generate JWT: \(error)")
-        }
+		_jwt = try generateJWT()
     }
+}
+
+// MARK: Errors
+extension FCM {
+	public enum InitializationError: Error {
+		case pemNotFound(path: String)
+		case pemBadJSON(path: String)
+		case variablesNotSet
+	}
 }
